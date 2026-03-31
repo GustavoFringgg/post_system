@@ -18,7 +18,7 @@ const change = computed(() => paymentAmount.value - cart.total)
 </script>
 
 <template>
-  <aside class="flex flex-col w-80 min-h-screen bg-white border-l border-border flex-shrink-0">
+  <aside class="flex flex-col w-96 min-h-screen bg-white border-l border-border flex-shrink-0">
 
     <!-- Header -->
     <div class="px-4 py-4 border-b border-border">

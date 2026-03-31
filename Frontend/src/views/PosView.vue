@@ -44,7 +44,7 @@ const categoryLabel: Record<Category, string> = {
       <div class="flex-1 overflow-y-auto p-5">
         <div
           v-if="filteredProducts.length > 0"
-          class="grid grid-cols-3 gap-4"
+          class="grid grid-cols-5 gap-4"
         >
           <ProductCard
             v-for="product in filteredProducts"

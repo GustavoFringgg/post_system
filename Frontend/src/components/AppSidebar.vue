@@ -23,7 +23,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <aside class="flex flex-col items-center w-16 min-h-screen bg-sidebar py-4 gap-2 flex-shrink-0">
+  <aside class="flex flex-col items-center w-24 min-h-screen bg-sidebar py-4 gap-2 flex-shrink-0">
     <!-- Logo area -->
     <div class="flex items-center justify-center w-10 h-10 mb-2">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

@@ -24,7 +24,10 @@ const keys: Array<{ label: string; value: string }> = [
     <button
       v-for="key in keys"
       :key="key.value"
-      class="h-11 rounded-lg bg-numpad-btn text-text-main text-base font-normal hover:bg-[#E0E0E0] active:bg-[#D0D0D0] active:scale-95 transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      :class="key.value === 'backspace'                                                                                                         
+      ? 'bg-red-100 hover:bg-red-200 text-red-500'                                                                                            
+      : 'bg-numpad-btn hover:bg-[#E0E0E0] text-text-main'"   
+      class="h-11 rounded-lg text-base font-normal  active:bg-[#D0D0D0] active:scale-95 transition-all duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
       :aria-label="key.value === 'backspace' ? '退格' : key.label"
       @click="emit('input', key.value)"
     >
