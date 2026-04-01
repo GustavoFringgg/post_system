@@ -116,11 +116,17 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
           <span class="text-[30px] font-medium text-text-main">總計</span>
           <span class="text-[30px] font-semibold text-primary tabular-nums">{{ formatPrice(cart.subtotal) }}</span>
         </div>
-        <div v-if="cart.items.length > 0 && paymentAmount > 0" class="flex justify-between text-[13px] pt-1">
-          <span class="text-[30px]">找零</span>
+        <div class="flex justify-between text-[13px] pt-1">
           <span
-            class="tabular-nums  text-[30px]"
-            :class="change >= 0 ? 'text-green-600' : 'text-red-500'"
+            class="text-[30px]"
+            :class="!(cart.items.length > 0 && paymentAmount > 0) ? 'invisible' : ''"
+          >找零</span>
+          <span
+            class="tabular-nums text-[30px]"
+            :class="[
+              !(cart.items.length > 0 && paymentAmount > 0) ? 'invisible' : '',
+              change >= 0 ? 'text-green-600' : 'text-red-500'
+            ]"
           >{{ formatPrice(change) }}</span>
         </div>
       </div>
@@ -138,9 +144,10 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
       </button>
 
       <button
-        v-if="cart.items.length > 0"
-        class="mt-4 w-full h-9 text-xl text-text-muted hover:text-red-500 transition-colors duration-150 cursor-pointer py-1"
+        class="mt-4 w-full h-9 text-xl text-text-muted py-1 transition-colors duration-150"
+        :class="cart.items.length > 0 ? 'hover:text-red-500 cursor-pointer' : 'invisible cursor-default'"
         aria-label="清空購物車"
+        :disabled="cart.items.length === 0"
         @click="cart.clearCart()"
       >
         清空購物車
