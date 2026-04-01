@@ -19,10 +19,6 @@ export const useCartStore = defineStore('cart', () => {
     items.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
   )
 
-  const taxRate = 0.05
-  const tax = computed(() => Math.round(subtotal.value * taxRate))
-  const total = computed(() => subtotal.value + tax.value)
-
   function addProduct(product: Product) {
     const existing = items.value.find(i => i.product.id === product.id)
     if (existing) {
@@ -52,9 +48,7 @@ export const useCartStore = defineStore('cart', () => {
 
   function appendNumpad(key: string) {
     if (key === 'backspace') {
-      paymentInput.value = paymentInput.value.length > 1
-        ? paymentInput.value.slice(0, -1)
-        : '0'
+      paymentInput.value = '0'
     } else if (key === '00') {
       if (paymentInput.value !== '0') {
         paymentInput.value += '00'
@@ -69,8 +63,6 @@ export const useCartStore = defineStore('cart', () => {
     paymentInput,
     itemCount,
     subtotal,
-    tax,
-    total,
     addProduct,
     removeItem,
     updateQuantity,

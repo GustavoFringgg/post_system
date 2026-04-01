@@ -14,11 +14,11 @@ const paymentAmount = computed(() => {
   return isNaN(val) ? 0 : val
 })
 
-const change = computed(() => paymentAmount.value - cart.total)
+const change = computed(() => paymentAmount.value - cart.subtotal)
 </script>
 
 <template>
-  <aside class="flex flex-col w-96 min-h-screen bg-white border-l border-border flex-shrink-0">
+  <aside class="flex flex-col w-[440px] min-h-screen bg-white border-l border-border flex-shrink-0">
 
     <!-- Header -->
     <div class="px-4 py-4 border-b border-border">
@@ -107,27 +107,19 @@ const change = computed(() => paymentAmount.value - cart.total)
         </span>
       </div>
 
-      <!-- Numpad -->
+      <!-- 數字鍵盤儀表板 -->
       <NumPad @input="cart.appendNumpad" />
 
       <!-- Summary -->
       <div class="mt-4 pt-3 border-t border-border space-y-2">
-        <div class="flex justify-between text-[13px]">
-          <span class="text-text-main">小計</span>
-          <span class="text-text-main tabular-nums">{{ formatPrice(cart.subtotal) }}</span>
-        </div>
-        <div class="flex justify-between text-[13px]">
-          <span class="text-text-muted">稅金 (5%)</span>
-          <span class="text-text-main tabular-nums">{{ formatPrice(cart.tax) }}</span>
-        </div>
         <div class="flex justify-between items-baseline pt-1">
-          <span class="text-sm font-medium text-text-main">總計</span>
-          <span class="text-base font-semibold text-primary tabular-nums">{{ formatPrice(cart.total) }}</span>
+          <span class="text-[30px] font-medium text-text-main">總計</span>
+          <span class="text-[30px] font-semibold text-primary tabular-nums">{{ formatPrice(cart.subtotal) }}</span>
         </div>
         <div v-if="cart.items.length > 0 && paymentAmount > 0" class="flex justify-between text-[13px] pt-1">
-          <span class="text-text-muted">找零</span>
+          <span class="text-[30px]">找零</span>
           <span
-            class="tabular-nums font-medium"
+            class="tabular-nums  text-[30px]"
             :class="change >= 0 ? 'text-green-600' : 'text-red-500'"
           >{{ formatPrice(change) }}</span>
         </div>
@@ -135,7 +127,7 @@ const change = computed(() => paymentAmount.value - cart.total)
 
       <!-- Checkout button -->
       <button
-        class="mt-4 w-full h-11 rounded-xl font-medium text-sm transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        class="mt-4 w-full h-14 rounded-xl font-medium text-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         :class="cart.items.length > 0
           ? 'bg-primary text-white hover:bg-primary-light cursor-pointer active:scale-[0.98]'
           : 'bg-numpad-btn text-text-muted cursor-not-allowed'"
@@ -147,7 +139,7 @@ const change = computed(() => paymentAmount.value - cart.total)
 
       <button
         v-if="cart.items.length > 0"
-        class="mt-2 w-full text-xs text-text-muted hover:text-red-500 transition-colors duration-150 cursor-pointer py-1"
+        class="mt-4 w-full h-9 text-xl text-text-muted hover:text-red-500 transition-colors duration-150 cursor-pointer py-1"
         aria-label="清空購物車"
         @click="cart.clearCart()"
       >
