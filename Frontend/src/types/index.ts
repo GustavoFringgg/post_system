@@ -4,6 +4,7 @@ export interface Product {
   price: number
   category: Category
   image?: string
+  stock:number
 }
 
 export type Category = 'all' | 'clothes' | 'pants' | 'shoes'
