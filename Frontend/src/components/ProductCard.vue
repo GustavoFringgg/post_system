@@ -16,12 +16,18 @@ function formatPrice(price: number): string {
 
 <template>
   <button
-    class="flex flex-col bg-white rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow duration-200"
+    class="relative flex flex-col bg-white rounded-xl border border-border overflow-hidden hover:shadow-md transition-shadow duration-200"
     role="article"
     :aria-label="product.name"
     @click="emit('add', product)"
   >
     <!-- Image area -->
+    <div
+      v-if="product.stock === 0"
+      class="absolute inset-0 bg-gray-400/50 flex items-center justify-center z-10 rounded-xl"
+    >
+      <span class="text-red-500 font-semibold text-[50px]">Sold Out</span>
+    </div>
     <div class="flex items-center justify-center bg-card-bg" style="height: 200px">
       <svg
         width="40"
