@@ -1,35 +1,42 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import type { Product } from '@/types'
+import { ref, computed } from "vue"
+import { defineStore } from "pinia"
+import type { Product } from "@/types"
+import { useProductStore } from "@/stores/products"
 
 export interface CartItem {
   product: Product
   quantity: number
 }
 
-export const useCartStore = defineStore('cart', () => {
+export const useCartStore = defineStore("cart", () => {
+  const productStore = useProductStore()
   const items = ref<CartItem[]>([])
-  const paymentInput = ref<string>('0')
+  const paymentInput = ref<string>("0")
 
-  const itemCount = computed(() =>
-    items.value.reduce((sum, item) => sum + item.quantity, 0)
-  )
+  const itemCount = computed(() => items.value.reduce((sum, item) => sum + item.quantity, 0))
 
-  const subtotal = computed(() =>
-    items.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0)
-  )
+  const subtotal = computed(() => items.value.reduce((sum, item) => sum + item.product.price * item.quantity, 0))
 
   function addProduct(product: Product) {
-    const existing = items.value.find(i => i.product.id === product.id)
+    const existing = items.value.find((i) => i.product.id === product.id)
+
+    const latest = productStore.list.find((p) => p.id === product.id)
+    if (!latest || latest.stock <= 0) return
+
     if (existing) {
       existing.quantity++
     } else {
       items.value.push({ product, quantity: 1 })
     }
+    productStore.adjustStock(product.id, -1)
   }
 
   function removeItem(productId: number) {
-    items.value = items.value.filter(i => i.product.id !== productId)
+    const item = items.value.find((i) => i.product.id === productId)
+    if (item) {
+      productStore.adjustStock(productId, item.quantity)
+    }
+    items.value = items.value.filter((i) => i.product.id !== productId)
   }
 
   function updateQuantity(productId: number, quantity: number) {
@@ -37,24 +44,31 @@ export const useCartStore = defineStore('cart', () => {
       removeItem(productId)
       return
     }
-    const item = items.value.find(i => i.product.id === productId)
-    if (item) item.quantity = quantity
+    const item = items.value.find((i) => i.product.id === productId)
+    if (item) {
+      const delta = quantity - item.quantity
+      item.quantity = Math.min(quantity, item.product.stock + item.quantity)
+      productStore.adjustStock(productId, -delta)
+    }
   }
 
   function clearCart() {
+    for (const item of items.value) {
+      productStore.adjustStock(item.product.id, item.quantity)
+    }
     items.value = []
-    paymentInput.value = '0'
+    paymentInput.value = "0"
   }
 
   function appendNumpad(key: string) {
-    if (key === 'backspace') {
-      paymentInput.value = '0'
-    } else if (key === '00') {
-      if (paymentInput.value !== '0') {
-        paymentInput.value += '00'
+    if (key === "backspace") {
+      paymentInput.value = "0"
+    } else if (key === "00") {
+      if (paymentInput.value !== "0") {
+        paymentInput.value += "00"
       }
     } else {
-      paymentInput.value = paymentInput.value === '0' ? key : paymentInput.value + key
+      paymentInput.value = paymentInput.value === "0" ? key : paymentInput.value + key
     }
   }
 
@@ -67,6 +81,6 @@ export const useCartStore = defineStore('cart', () => {
     removeItem,
     updateQuantity,
     clearCart,
-    appendNumpad,
+    appendNumpad
   }
 })
