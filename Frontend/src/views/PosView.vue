@@ -14,7 +14,7 @@ const productStore = useProductStore()
 const filteredProducts = computed(() =>
   activeCategory.value === "all"
     ? productStore.list
-    : productStore.list.filter((p) => p.category === activeCategory.value)
+    : productStore.list.filter((p) => p.category_id === activeCategory.value)
 )
 
 const categoryLabel: Record<Category, string> = {
@@ -27,22 +27,17 @@ const categoryLabel: Record<Category, string> = {
 
 <template>
   <div class="flex h-screen w-screen overflow-hidden bg-white font-sans">
-    <!-- Left: Sidebar -->
-    <AppSidebar
-      :active-category="activeCategory"
-      @select="activeCategory = $event"
-    />
+    <!-- 左側選單列 -->
+    <AppSidebar :active-category="activeCategory" @select="activeCategory = $event" />
 
-    <!-- Center: Product list -->
+    <!-- 主要商品成列列表 -->
     <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <!-- Header -->
       <div class="px-5 py-4 border-b border-border">
         <h1 class="text-lg font-medium text-text-main font-heading">
           {{ categoryLabel[activeCategory] }}
         </h1>
-        <p class="text-xs text-text-muted mt-0.5">
-          {{ filteredProducts.length }} 件商品
-        </p>
+        <p class="text-xs text-text-muted mt-0.5">{{ filteredProducts.length }} 件商品</p>
       </div>
 
       <!-- Grid -->
@@ -57,10 +52,7 @@ const categoryLabel: Record<Category, string> = {
         </div>
 
         <!-- Empty state for category with no products -->
-        <div
-          v-else
-          class="flex flex-col items-center justify-center h-full gap-3 text-center"
-        >
+        <div v-else class="flex flex-col items-center justify-center h-full gap-3 text-center">
           <svg
             width="48"
             height="48"
@@ -80,7 +72,7 @@ const categoryLabel: Record<Category, string> = {
       </div>
     </main>
 
-    <!-- Right: Cart panel -->
+    <!-- 右側購物車列表 -->
     <CartPanel />
   </div>
 </template>
