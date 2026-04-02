@@ -80,7 +80,7 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
             <button
               class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E0E0E0] text-text-main text-sm transition-colors duration-150 cursor-pointer"
               :aria-label="`減少 ${item.product.name} 數量`"
-              @click="cart.updateQuantity(item.product.id, item.quantity - 1)"
+              @click="cart.updateCartQuantity(item.product.id, item.quantity - 1)"
             >
               −
             </button>
@@ -90,7 +90,7 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
             <button
               class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E0E0E0] text-text-main text-sm transition-colors duration-150 cursor-pointer"
               :aria-label="`增加 ${item.product.name} 數量`"
-              @click="cart.updateQuantity(item.product.id, item.quantity + 1)"
+              @click="cart.updateCartQuantity(item.product.id, item.quantity + 1)"
             >
               +
             </button>
@@ -103,7 +103,7 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
           <button
             class="text-text-muted hover:text-red-500 transition-colors duration-150 cursor-pointer ml-1"
             :aria-label="`移除 ${item.product.name}`"
-            @click="cart.removeItem(item.product.id)"
+            @click="cart.removeCartProduct(item.product.id)"
           >
             <svg
               width="14"
@@ -135,7 +135,7 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
       </div>
 
       <!-- 數字鍵盤儀表板 -->
-      <NumPad @input="cart.appendNumpad" />
+      <NumPad @input="cart.updatePaymentInput" />
 
       <!-- Summary -->
       <div class="mt-4 pt-3 border-t border-border space-y-2">

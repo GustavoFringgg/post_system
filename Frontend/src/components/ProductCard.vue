@@ -26,7 +26,7 @@ function formatPrice(price: number): string {
       v-if="product.stock === 0"
       class="absolute inset-0 bg-gray-400/50 flex items-center justify-center z-10 rounded-xl"
     >
-      <span class="text-red-500 font-semibold text-[50px]">Sold Out</span>
+      <span class="text-red-400 font-semibold text-[50px]">Sold Out</span>
     </div>
     <div class="flex items-center justify-center bg-card-bg" style="height: 200px">
       <svg
