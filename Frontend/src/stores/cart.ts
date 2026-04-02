@@ -68,15 +68,20 @@ export const useCartStore = defineStore("cart", () => {
   }
 
   function updatePaymentInput(key: string) {
-    console.log("appendNumpad")
     if (key === "backspace") {
       paymentInput.value = "0"
     } else if (key === "00") {
       if (paymentInput.value !== "0") {
-        paymentInput.value += "00"
+        const next = paymentInput.value + "00"
+        if (Number(next) <= 100000000) {
+          paymentInput.value = next
+        }
       }
     } else {
-      paymentInput.value = paymentInput.value === "0" ? key : paymentInput.value + key
+      const next = paymentInput.value === "0" ? key : paymentInput.value + key
+      if (Number(next) <= 100000000) {
+        paymentInput.value = next
+      }
     }
   }
 
