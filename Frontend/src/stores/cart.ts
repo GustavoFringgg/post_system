@@ -62,6 +62,11 @@ export const useCartStore = defineStore("cart", () => {
     paymentInput.value = "0"
   }
 
+  function checkout() {
+    items.value = []
+    paymentInput.value = "0"
+  }
+
   function updatePaymentInput(key: string) {
     console.log("appendNumpad")
     if (key === "backspace") {
@@ -84,6 +89,7 @@ export const useCartStore = defineStore("cart", () => {
     removeCartProduct,
     updateCartQuantity,
     clearCart,
+    checkout,
     updatePaymentInput
   }
 })

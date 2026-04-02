@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { useCartStore } from "@/stores/cart"
 import NumPad from "./NumPad.vue"
 
 const cart = useCartStore()
+
+const showModal = ref(false)
+const showSuccess = ref(false)
 
 function formatPrice(amount: number): string {
   return `$${amount.toLocaleString()}`
@@ -15,6 +18,24 @@ const paymentAmount = computed(() => {
 })
 
 const change = computed(() => paymentAmount.value - cart.subtotal)
+
+function openCheckoutModal() {
+  if (cart.items.length === 0) return
+  showModal.value = true
+}
+
+function cancelCheckout() {
+  showModal.value = false
+}
+
+function confirmCheckout() {
+  cart.checkout()
+  showModal.value = false
+  showSuccess.value = true
+  setTimeout(() => {
+    showSuccess.value = false
+  }, 2500)
+}
 </script>
 
 <template>
@@ -169,6 +190,7 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
         "
         :disabled="cart.items.length === 0"
         aria-label="結帳"
+        @click="openCheckoutModal"
       >
         結帳
       </button>
@@ -184,4 +206,99 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
       </button>
     </div>
   </aside>
+
+  <!-- Checkout Confirmation Modal -->
+  <Teleport to="body">
+    <div
+      v-if="showModal"
+      class="fixed inset-0 z-50 flex items-center justify-center"
+      style="background: rgba(0,0,0,0.45)"
+      @click.self="cancelCheckout"
+    >
+      <div class="bg-white rounded-2xl shadow-2xl w-[380px] max-w-[90vw] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="px-6 pt-6 pb-4 border-b border-border">
+          <h3 class="text-lg font-semibold text-text-main">確認結帳</h3>
+          <p class="text-xs text-text-muted mt-0.5">請確認以下訂單資訊</p>
+        </div>
+
+        <!-- Item list -->
+        <div class="px-6 py-4 max-h-52 overflow-y-auto space-y-2">
+          <div
+            v-for="item in cart.items"
+            :key="item.product.id"
+            class="flex justify-between items-center text-sm"
+          >
+            <span class="text-text-main">
+              {{ item.product.name }}
+              <span class="text-text-muted ml-1">x{{ item.quantity }}</span>
+            </span>
+            <span class="tabular-nums text-text-main font-medium">
+              {{ formatPrice(item.product.price * item.quantity) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="px-6 py-4 bg-[#F8FAFC] space-y-2 border-t border-border">
+          <div class="flex justify-between text-sm">
+            <span class="text-text-muted">商品件數</span>
+            <span class="tabular-nums text-text-main">{{ cart.itemCount }} 件</span>
+          </div>
+          <div class="flex justify-between font-semibold text-base pt-1">
+            <span class="text-text-main">總金額</span>
+            <span class="tabular-nums text-primary">{{ formatPrice(cart.subtotal) }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-text-muted">收款</span>
+            <span class="tabular-nums text-text-main">{{ formatPrice(paymentAmount) }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-text-muted">找零</span>
+            <span
+              class="tabular-nums font-medium"
+              :class="change >= 0 ? 'text-green-600' : 'text-red-500'"
+            >
+              {{ formatPrice(change) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="flex gap-3 px-6 py-4">
+          <button
+            class="flex-1 h-11 rounded-xl border border-border text-text-main text-sm font-medium hover:bg-numpad-btn transition-colors cursor-pointer"
+            @click="cancelCheckout"
+          >
+            取消
+          </button>
+          <button
+            class="flex-1 h-11 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-light transition-colors cursor-pointer active:scale-[0.98]"
+            @click="confirmCheckout"
+          >
+            確認結帳
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div
+      v-if="showSuccess"
+      class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg text-sm font-medium"
+      style="animation: fadeInUp 0.25s ease"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+      結帳成功！
+    </div>
+  </Teleport>
 </template>
+
+<style scoped>
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+</style>
