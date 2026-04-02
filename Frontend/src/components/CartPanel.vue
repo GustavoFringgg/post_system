@@ -28,6 +28,10 @@ function cancelCheckout() {
   showModal.value = false
 }
 
+function setExactPayment() {
+  cart.paymentInput = cart.subtotal.toString()
+}
+
 function confirmCheckout() {
   cart.checkout()
   showModal.value = false
@@ -148,11 +152,26 @@ function confirmCheckout() {
     <div class="border-t border-border px-4 pt-4 pb-4">
       <!-- Payment input display -->
       <p class="text-xs text-text-muted mb-2">客人付款</p>
-      <div class="flex items-center justify-between bg-[#F8FAFC] rounded-lg px-3 py-2.5 mb-3 border border-border">
-        <span class="text-sm text-text-muted">付款金額</span>
-        <span class="text-lg font-semibold text-text-main tabular-nums">
-          ${{ Number(cart.paymentInput).toLocaleString() }}
-        </span>
+      <div class="flex items-center gap-2 mb-3">
+        <div class="flex flex-1 items-center justify-between bg-[#F8FAFC] rounded-lg px-3 py-2.5 border border-border">
+          <span class="text-sm text-text-muted">付款金額</span>
+          <span class="text-lg font-semibold text-text-main tabular-nums">
+            ${{ Number(cart.paymentInput).toLocaleString() }}
+          </span>
+        </div>
+        <button
+          class="w-[130px] h-full px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors duration-150"
+          :class="
+            cart.items.length > 0
+              ? 'border-primary text-primary hover:bg-primary hover:text-white cursor-pointer'
+              : 'border-border text-text-muted cursor-not-allowed'
+          "
+          :disabled="cart.items.length === 0"
+          aria-label="客人付剛好"
+          @click="setExactPayment"
+        >
+          金額剛好
+        </button>
       </div>
 
       <!-- 數字鍵盤儀表板 -->
@@ -212,7 +231,7 @@ function confirmCheckout() {
     <div
       v-if="showModal"
       class="fixed inset-0 z-50 flex items-center justify-center"
-      style="background: rgba(0,0,0,0.45)"
+      style="background: rgba(0, 0, 0, 0.45)"
       @click.self="cancelCheckout"
     >
       <div class="bg-white rounded-2xl shadow-2xl w-[380px] max-w-[90vw] overflow-hidden">
@@ -224,11 +243,7 @@ function confirmCheckout() {
 
         <!-- Item list -->
         <div class="px-6 py-4 max-h-52 overflow-y-auto space-y-2">
-          <div
-            v-for="item in cart.items"
-            :key="item.product.id"
-            class="flex justify-between items-center text-sm"
-          >
+          <div v-for="item in cart.items" :key="item.product.id" class="flex justify-between items-center text-sm">
             <span class="text-text-main">
               {{ item.product.name }}
               <span class="text-text-muted ml-1">x{{ item.quantity }}</span>
@@ -255,10 +270,7 @@ function confirmCheckout() {
           </div>
           <div class="flex justify-between text-sm">
             <span class="text-text-muted">找零</span>
-            <span
-              class="tabular-nums font-medium"
-              :class="change >= 0 ? 'text-green-600' : 'text-red-500'"
-            >
+            <span class="tabular-nums font-medium" :class="change >= 0 ? 'text-green-600' : 'text-red-500'">
               {{ formatPrice(change) }}
             </span>
           </div>
@@ -288,7 +300,16 @@ function confirmCheckout() {
       class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg text-sm font-medium"
       style="animation: fadeInUp 0.25s ease"
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <polyline points="20 6 9 17 4 12" />
       </svg>
       結帳成功！
@@ -298,7 +319,13 @@ function confirmCheckout() {
 
 <style scoped>
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateX(-50%) translateY(12px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 </style>
