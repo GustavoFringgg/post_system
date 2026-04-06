@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { compile, computed, ref } from "vue"
 import { useCartStore } from "@/stores/cart"
 import NumPad from "./NumPad.vue"
 
@@ -24,6 +24,14 @@ const paymentAmount = computed(() => {
 })
 
 const change = computed(() => paymentAmount.value - cart.subtotal)
+
+const canCheckout = computed(() => {
+  if (cart.items.length === 0) return false
+
+  if (!cart.paymentInput || cart.paymentInput === "0") return true
+
+  return paymentAmount.value >= cart.subtotal
+})
 </script>
 
 <template>
@@ -194,16 +202,15 @@ const change = computed(() => paymentAmount.value - cart.subtotal)
         </svg>
         結帳成功！
       </div>
-      {{ change }}
       <!-- 結帳按鈕 -->
       <button
         class="mt-4 w-full h-14 rounded-xl font-medium text-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         :class="
-          cart.items.length > 0
+          canCheckout
             ? 'bg-primary text-white hover:bg-primary-light cursor-pointer active:scale-[0.98]'
             : 'bg-numpad-btn text-text-muted cursor-not-allowed'
         "
-        :disabled="cart.items.length === 0"
+        :disabled="!canCheckout"
         aria-label="結帳"
         @click="handleCheckout"
       >
