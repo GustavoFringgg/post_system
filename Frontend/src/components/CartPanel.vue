@@ -95,7 +95,7 @@ const canCheckout = computed(() => {
           <!-- Quantity controls -->
           <div class="flex items-center gap-1.5">
             <button
-              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E0E0E0] text-text-main text-sm transition-colors duration-150 cursor-pointer"
+              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E8D5C8] text-text-main text-sm transition-colors duration-150 cursor-pointer"
               :aria-label="`減少 ${item.product.name} 數量`"
               @click="cart.updateCartQuantity(item.product.id, item.quantity - 1)"
             >
@@ -105,7 +105,7 @@ const canCheckout = computed(() => {
             <span class="w-6 text-center text-sm tabular-nums text-text-main">{{ item.quantity }}</span>
 
             <button
-              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E0E0E0] text-text-main text-sm transition-colors duration-150 cursor-pointer"
+              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E8D5C8] text-text-main text-sm transition-colors duration-150 cursor-pointer"
               :aria-label="`增加 ${item.product.name} 數量`"
               @click="cart.updateCartQuantity(item.product.id, item.quantity + 1)"
             >
@@ -147,7 +147,7 @@ const canCheckout = computed(() => {
         <p class="text-xs text-text-muted mb-2">客人付款</p>
         <div class="flex items-center gap-2 mb-3">
           <div
-            class="flex flex-1 items-center justify-between bg-[#F8FAFC] rounded-lg px-3 py-2.5 border border-border"
+            class="flex flex-1 items-center justify-between bg-[#FEF0E8] rounded-lg px-3 py-2.5 border border-border"
           >
             <span class="text-sm text-text-muted">付款金額</span>
             <span class="text-lg font-semibold text-text-main tabular-nums">
