@@ -26,7 +26,7 @@ const categoryLabel: Record<Category, string> = {
 </script>
 
 <template>
-  <div class="flex h-screen w-screen overflow-hidden bg-white font-sans">
+  <div class="flex h-screen w-screen overflow-hidden bg-[#FEF7F2] font-sans">
     <!-- 左側選單列 -->
     <AppSidebar :active-category="activeCategory" @select="activeCategory = $event" />
 

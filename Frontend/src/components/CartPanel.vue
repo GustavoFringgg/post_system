@@ -1,15 +1,21 @@
 <script setup lang="ts">
-import { computed, ref } from "vue"
+import { compile, computed, ref } from "vue"
 import { useCartStore } from "@/stores/cart"
 import NumPad from "./NumPad.vue"
 
 const cart = useCartStore()
-
-const showModal = ref(false)
 const showSuccess = ref(false)
 
 function formatPrice(amount: number): string {
   return `$${amount.toLocaleString()}`
+}
+
+function handleCheckout() {
+  cart.checkout()
+  showSuccess.value = true
+  setTimeout(() => {
+    showSuccess.value = false
+  }, 2500)
 }
 
 const paymentAmount = computed(() => {
@@ -19,27 +25,13 @@ const paymentAmount = computed(() => {
 
 const change = computed(() => paymentAmount.value - cart.subtotal)
 
-function openCheckoutModal() {
-  if (cart.items.length === 0) return
-  showModal.value = true
-}
+const canCheckout = computed(() => {
+  if (cart.items.length === 0) return false
 
-function cancelCheckout() {
-  showModal.value = false
-}
+  if (!cart.paymentInput || cart.paymentInput === "0") return true
 
-function setExactPayment() {
-  cart.paymentInput = cart.subtotal.toString()
-}
-
-function confirmCheckout() {
-  cart.checkout()
-  showModal.value = false
-  showSuccess.value = true
-  setTimeout(() => {
-    showSuccess.value = false
-  }, 2500)
-}
+  return paymentAmount.value >= cart.subtotal
+})
 </script>
 
 <template>
@@ -103,7 +95,7 @@ function confirmCheckout() {
           <!-- Quantity controls -->
           <div class="flex items-center gap-1.5">
             <button
-              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E0E0E0] text-text-main text-sm transition-colors duration-150 cursor-pointer"
+              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E8D5C8] text-text-main text-sm transition-colors duration-150 cursor-pointer"
               :aria-label="`減少 ${item.product.name} 數量`"
               @click="cart.updateCartQuantity(item.product.id, item.quantity - 1)"
             >
@@ -113,7 +105,7 @@ function confirmCheckout() {
             <span class="w-6 text-center text-sm tabular-nums text-text-main">{{ item.quantity }}</span>
 
             <button
-              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E0E0E0] text-text-main text-sm transition-colors duration-150 cursor-pointer"
+              class="w-6 h-6 flex items-center justify-center rounded bg-numpad-btn hover:bg-[#E8D5C8] text-text-main text-sm transition-colors duration-150 cursor-pointer"
               :aria-label="`增加 ${item.product.name} 數量`"
               @click="cart.updateCartQuantity(item.product.id, item.quantity + 1)"
             >
@@ -149,35 +141,26 @@ function confirmCheckout() {
     </div>
 
     <!-- Payment section -->
-    <div class="border-t border-border px-4 pt-4 pb-4">
+    <div class="relative border-t border-border px-4 pt-4 pb-4">
       <!-- Payment input display -->
-      <p class="text-xs text-text-muted mb-2">客人付款</p>
-      <div class="flex items-center gap-2 mb-3">
-        <div class="flex flex-1 items-center justify-between bg-[#F8FAFC] rounded-lg px-3 py-2.5 border border-border">
-          <span class="text-sm text-text-muted">付款金額</span>
-          <span class="text-lg font-semibold text-text-main tabular-nums">
-            ${{ Number(cart.paymentInput).toLocaleString() }}
-          </span>
+      <div v-if="Number(cart.paymentInput) > 0">
+        <p class="text-xs text-text-muted mb-2">客人付款</p>
+        <div class="flex items-center gap-2 mb-3">
+          <div
+            class="flex flex-1 items-center justify-between bg-[#FEF0E8] rounded-lg px-3 py-2.5 border border-border"
+          >
+            <span class="text-sm text-text-muted">付款金額</span>
+            <span class="text-lg font-semibold text-text-main tabular-nums">
+              ${{ Number(cart.paymentInput).toLocaleString() }}
+            </span>
+          </div>
         </div>
-        <button
-          class="w-[130px] h-full px-3 py-2.5 rounded-lg border text-sm font-medium transition-colors duration-150"
-          :class="
-            cart.items.length > 0
-              ? 'border-primary text-primary hover:bg-primary hover:text-white cursor-pointer'
-              : 'border-border text-text-muted cursor-not-allowed'
-          "
-          :disabled="cart.items.length === 0"
-          aria-label="客人付剛好"
-          @click="setExactPayment"
-        >
-          金額剛好
-        </button>
       </div>
 
       <!-- 數字鍵盤儀表板 -->
       <NumPad @input="cart.updatePaymentInput" />
 
-      <!-- Summary -->
+      <!-- 總金額 -->
       <div class="mt-4 pt-3 border-t border-border space-y-2">
         <div class="flex justify-between items-baseline pt-1">
           <span class="text-[30px] font-medium text-text-main">總計</span>
@@ -199,17 +182,37 @@ function confirmCheckout() {
         </div>
       </div>
 
-      <!-- Checkout button -->
+      <!-- 結帳成功通知 -->
+      <div
+        v-if="showSuccess"
+        class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg text-sm font-medium z-10"
+        style="animation: fadeInUp 0.25s ease"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <polyline points="20 6 9 17 4 12" />
+        </svg>
+        結帳成功！
+      </div>
+      <!-- 結帳按鈕 -->
       <button
         class="mt-4 w-full h-14 rounded-xl font-medium text-xl transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
         :class="
-          cart.items.length > 0
+          canCheckout
             ? 'bg-primary text-white hover:bg-primary-light cursor-pointer active:scale-[0.98]'
             : 'bg-numpad-btn text-text-muted cursor-not-allowed'
         "
-        :disabled="cart.items.length === 0"
+        :disabled="!canCheckout"
         aria-label="結帳"
-        @click="openCheckoutModal"
+        @click="handleCheckout"
       >
         結帳
       </button>
@@ -225,107 +228,17 @@ function confirmCheckout() {
       </button>
     </div>
   </aside>
-
-  <!-- Checkout Confirmation Modal -->
-  <Teleport to="body">
-    <div
-      v-if="showModal"
-      class="fixed inset-0 z-50 flex items-center justify-center"
-      style="background: rgba(0, 0, 0, 0.45)"
-      @click.self="cancelCheckout"
-    >
-      <div class="bg-white rounded-2xl shadow-2xl w-[380px] max-w-[90vw] overflow-hidden">
-        <!-- Modal Header -->
-        <div class="px-6 pt-6 pb-4 border-b border-border">
-          <h3 class="text-lg font-semibold text-text-main">確認結帳</h3>
-          <p class="text-xs text-text-muted mt-0.5">請確認以下訂單資訊</p>
-        </div>
-
-        <!-- Item list -->
-        <div class="px-6 py-4 max-h-52 overflow-y-auto space-y-2">
-          <div v-for="item in cart.items" :key="item.product.id" class="flex justify-between items-center text-sm">
-            <span class="text-text-main">
-              {{ item.product.name }}
-              <span class="text-text-muted ml-1">x{{ item.quantity }}</span>
-            </span>
-            <span class="tabular-nums text-text-main font-medium">
-              {{ formatPrice(item.product.price * item.quantity) }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Summary -->
-        <div class="px-6 py-4 bg-[#F8FAFC] space-y-2 border-t border-border">
-          <div class="flex justify-between text-sm">
-            <span class="text-text-muted">商品件數</span>
-            <span class="tabular-nums text-text-main">{{ cart.itemCount }} 件</span>
-          </div>
-          <div class="flex justify-between font-semibold text-base pt-1">
-            <span class="text-text-main">總金額</span>
-            <span class="tabular-nums text-primary">{{ formatPrice(cart.subtotal) }}</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-text-muted">收款</span>
-            <span class="tabular-nums text-text-main">{{ formatPrice(paymentAmount) }}</span>
-          </div>
-          <div class="flex justify-between text-sm">
-            <span class="text-text-muted">找零</span>
-            <span class="tabular-nums font-medium" :class="change >= 0 ? 'text-green-600' : 'text-red-500'">
-              {{ formatPrice(change) }}
-            </span>
-          </div>
-        </div>
-
-        <!-- Action buttons -->
-        <div class="flex gap-3 px-6 py-4">
-          <button
-            class="flex-1 h-11 rounded-xl border border-border text-text-main text-sm font-medium hover:bg-numpad-btn transition-colors cursor-pointer"
-            @click="cancelCheckout"
-          >
-            取消
-          </button>
-          <button
-            class="flex-1 h-11 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary-light transition-colors cursor-pointer active:scale-[0.98]"
-            @click="confirmCheckout"
-          >
-            確認結帳
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Success Toast -->
-    <div
-      v-if="showSuccess"
-      class="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-xl shadow-lg text-sm font-medium"
-      style="animation: fadeInUp 0.25s ease"
-    >
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <polyline points="20 6 9 17 4 12" />
-      </svg>
-      結帳成功！
-    </div>
-  </Teleport>
 </template>
 
 <style scoped>
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(12px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateY(0);
   }
 }
 </style>
