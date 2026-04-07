@@ -24,6 +24,10 @@ Backend/dist/
 Backend/build/
 Backend/.pytest_cache/
 
+# Docker
+postgres_data/
+.env
+
 # Editors
 .vscode/
 .idea/
