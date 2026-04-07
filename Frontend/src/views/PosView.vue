@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import AppSidebar from "@/components/AppSidebar.vue"
 import ProductCard from "@/components/ProductCard.vue"
 import CartPanel from "@/components/CartPanel.vue"
@@ -23,6 +23,10 @@ const categoryLabel: Record<Category, string> = {
   pants: "褲子",
   shoes: "鞋子"
 }
+
+onMounted(() => {
+  productStore.loadProduct()
+})
 </script>
 
 <template>
@@ -42,7 +46,22 @@ const categoryLabel: Record<Category, string> = {
 
       <!-- Grid -->
       <div class="flex-1 overflow-y-auto p-5">
-        <div v-if="filteredProducts.length > 0" class="grid grid-cols-5 gap-4">
+        <!-- Loading state -->
+        <div v-if="productStore.loading" class="grid grid-cols-5 gap-4">
+          <div
+            v-for="n in 10"
+            :key="n"
+            class="flex flex-col bg-white rounded-xl border border-border overflow-hidden animate-pulse"
+          >
+            <div class="bg-gray-200" style="height: 200px" />
+            <div class="px-3.5 py-3 flex flex-col gap-2">
+              <div class="h-3.5 bg-gray-200 rounded w-3/4" />
+              <div class="h-3.5 bg-gray-200 rounded w-1/2" />
+            </div>
+          </div>
+        </div>
+
+        <div v-else-if="filteredProducts.length > 0" class="grid grid-cols-5 gap-4">
           <ProductCard
             v-for="product in filteredProducts"
             :key="product.id"

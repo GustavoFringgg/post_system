@@ -6,7 +6,6 @@ export interface Product {
   stock: number
   category_id: Category
   image_url: string | null
-  group_id: string
   created_at: string
 }
 
