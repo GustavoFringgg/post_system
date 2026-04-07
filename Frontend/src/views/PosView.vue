@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue"
+import { ref, computed, onMounted } from "vue"
 import AppSidebar from "@/components/AppSidebar.vue"
 import ProductCard from "@/components/ProductCard.vue"
 import CartPanel from "@/components/CartPanel.vue"
@@ -23,6 +23,10 @@ const categoryLabel: Record<Category, string> = {
   pants: "褲子",
   shoes: "鞋子"
 }
+
+onMounted(() => {
+  productStore.loadProduct()
+})
 </script>
 
 <template>
