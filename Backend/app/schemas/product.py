@@ -12,7 +12,6 @@ class Product(BaseModel):
     stock: int
     category_id: Category
     image_url: str | None
-    group_id: str
     created_at: str
 
     model_config = {"from_attributes": True}
