@@ -7,13 +7,11 @@ class OrderItem(BaseModel):
 
 
 class OrderCreate(BaseModel):
+    user_id: int
     items: list[OrderItem]
-    subtotal: int
-    payment_amount: int
-    change: int
 
 
-class OrderRead(BaseModel):
-    order_id: int
-    created_at: str
-    status: str
+# class OrderRead(BaseModel):
+#     order_id: int
+#     created_at: str
+#     status: str
