@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { compile, computed, ref } from "vue"
+import { computed, ref } from "vue"
 import { useCartStore } from "@/stores/cart"
 import NumPad from "./NumPad.vue"
 
@@ -10,8 +10,8 @@ function formatPrice(amount: number): string {
   return `$${amount.toLocaleString()}`
 }
 
-function handleCheckout() {
-  cart.checkout()
+async function handleCheckout() {
+  await cart.checkout()
   showSuccess.value = true
   setTimeout(() => {
     showSuccess.value = false
