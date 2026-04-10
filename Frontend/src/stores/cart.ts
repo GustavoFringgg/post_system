@@ -1,7 +1,10 @@
 import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import type { Product } from "@/types"
+import type { Order, OrderItem } from "@/types"
 import { useProductStore } from "@/stores/products"
+import { useUserStore } from "@/stores/users"
+import { createOrder } from "@/api/orders"
 
 export interface CartItem {
   product: Product
@@ -10,6 +13,8 @@ export interface CartItem {
 
 export const useCartStore = defineStore("cart", () => {
   const productStore = useProductStore()
+  const userStore = useUserStore()
+
   const items = ref<CartItem[]>([])
   const paymentInput = ref<string>("0")
 
@@ -62,7 +67,16 @@ export const useCartStore = defineStore("cart", () => {
     paymentInput.value = "0"
   }
 
-  function checkout() {
+  async function checkout() {
+    const orderItems: OrderItem[] = items.value.map((item) => ({
+      product_id: item.product.id,
+      quantity: item.quantity
+    }))
+    const order: Order = {
+      user_id: userStore.currentUser.id,
+      items: orderItems
+    }
+    await createOrder(order)
     items.value = []
     paymentInput.value = "0"
   }
