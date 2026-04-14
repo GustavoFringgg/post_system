@@ -28,6 +28,11 @@ Backend/.pytest_cache/
 postgres_data/
 .env
 
+# Claude Code (personal workflow commands)
+.claude/
+gemini-review.skill
+gemini-review/
+
 # Editors
 .vscode/
 .idea/
