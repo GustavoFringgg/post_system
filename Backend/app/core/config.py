@@ -13,13 +13,16 @@ class Settings(BaseSettings):
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     DB_NAME: str 
+    DATABASE_URL:str
 
 #修飾一個方法後，會讓它像屬性一樣讀取 呼叫時不用()
 #asyncpg維持非同步查詢
 # return 資料庫總類/名稱:密碼＠host:資料庫名稱
     @property
-    def DATABASE_URL(self) -> str:
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"      
+    def async_database_url(self) -> str:
+        # return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"      
+        # postgresql+asyncpg:// 這個格式是 SQLAlchemy 專屬的 dialect 寫法
+        return self.DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
 
 
 
