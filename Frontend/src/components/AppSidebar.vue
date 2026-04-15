@@ -20,27 +20,13 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: "select", category: Category): void
 }>()
-
-console.log("props", props)
 </script>
 
 <template>
   <aside class="flex flex-col items-center w-24 min-h-screen bg-sidebar py-4 gap-2 flex-shrink-0">
     <!-- Logo area -->
-    <div class="flex items-center justify-center w-10 h-10 mb-2">
-      <svg
-        width="24"
-        height="24"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="#FFFFFF"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-        <polyline points="9 22 9 12 15 12 15 22" />
-      </svg>
+    <div class="flex items-center justify-center w-12 h-12 mb-2">
+      <img src="../public/images/logos/liyaologo.png" alt="公司logo" class="w-full h-full object-contain" />
     </div>
 
     <!-- Nav items -->

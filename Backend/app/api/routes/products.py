@@ -12,7 +12,7 @@ router = APIRouter()
 # .scalars().all() 將原始數據轉化為 json 格式
 @router.get('/' , response_model = list[ProductSchema])
 async def get_products(category:Category | None = Query(default = None),session:AsyncSession = Depends(get_session)):
-    stmt = select(Product) # 等同於 SELECT * FROM product;
+    stmt = select(Product).order_by(Product.id) # 等同於 SELECT * FROM product ORDER BY id;
     if category is not None:
         stmt = stmt.where(Product.category_id == category)
     result = await session.execute(stmt)
