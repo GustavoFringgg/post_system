@@ -16,3 +16,4 @@ class Product(BaseModel):
     created_at: datetime
 
     model_config = {"from_attributes": True}
+    # 加了 from_attributes: True 之後，Pydantic 就能直接讀 SQLModel 物件的屬性來轉換

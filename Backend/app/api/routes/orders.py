@@ -9,10 +9,11 @@ from app.schemas.order import OrderCreate  # , OrderRead
 from app.models.product import Product
 from app.models.order import Order
 from app.models.order_item import OrderItem
+from app.core.exceptions import NotFoundError,StockNotEnough
 
 router = APIRouter()
 
-@router.post('/',status_code=201)
+@router.post('',status_code=201)
 async def create_order(order:OrderCreate,session:AsyncSession= Depends(get_session)):
     # product_ids = [item.product_id for item in order.items]
     # 透過 order 取得商品 list 再確認是否 order 都存在商品 list
@@ -22,8 +23,10 @@ async def create_order(order:OrderCreate,session:AsyncSession= Depends(get_sessi
 
     for item in order.items:
         if item.product_id not in products:
-            raise HTTPException(status_code=404, detail=f"Product {item.product_id} not found")
-        
+            raise NotFoundError("Product", item.product_id)    
+        if products[item.product_id].stock < item.quantity:
+            raise StockNotEnough("Product",item.product_id) 
+
     # 寫入 Order 整筆訂單
     subtotal = sum(products[item.product_id].price * item.quantity for item in order.items)
     new_order = Order(user_id = order.user_id, subtotal = subtotal) # 透過 model 加入物件參數 new_order
@@ -39,13 +42,10 @@ async def create_order(order:OrderCreate,session:AsyncSession= Depends(get_sessi
             unit_price = products[item.product_id].price,
         )
         session.add(order_item)
-        products[item.product_id].stock -= item.quantity
+        products[item.product_id].stock -= item.quantity # 扣庫存
         session.add(products[item.product_id])
     await session.commit()
     return
-    
-    
-
 
 
 # products = {
