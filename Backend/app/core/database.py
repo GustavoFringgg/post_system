@@ -12,7 +12,7 @@ from app.core.config import settings
 # echo 將送出sql語法印到terminal上線時記得改false
 # class_= AsyncSession 依此類別來產生非同步的版本(可以使用await)
 # expire_on_commit=False commit 後不會再查db 直接使用記憶體的資料 非同步專案設成 False 是標準做法，避免自動觸發同步查詢
-engine = create_async_engine(settings.async_database_url, echo=True)
+engine = create_async_engine(settings.async_database_url, echo=False)
 AsyncSessionLocal = sessionmaker(
     engine, class_=AsyncSession, expire_on_commit=False
 )
