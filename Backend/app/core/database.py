@@ -21,12 +21,12 @@ AsyncSessionLocal = sessionmaker(
 # run_sync 把同步函數包起來 可以在非同步環境執行
 # 等待 → 用非同步連線執行 → 把同步的 create_all → 在 DB 裡建立所有 table
 
-async def init_db():
-    async with engine.begin() as conn: # .begin() 開啟 transaction
+#async def init_db():
+    #async with engine.begin() as conn: # .begin() 開啟 transaction
         #engine.begin() 會回傳一個 connection 物件，as conn 就是把它存到 conn 這個變數
-        await conn.run_sync(SQLModel.metadata.create_all) #掃描 model 的資料 然後建立資料結構
+        #await conn.run_sync(SQLModel.metadata.create_all) #掃描 model 的資料 然後建立資料結構
 
-# 建立 session d
+# 建立 session 
 # 提供 session 給 API 路由使用
 # 自動關閉 session
 # yield — 給出去，但函數還沒結束
