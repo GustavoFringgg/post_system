@@ -11,7 +11,6 @@ from app.core.config import settings
 from app.core.exceptions import AppError
 from app.api.routes import products, orders, health
 
-from app.core.database import init_db                                                                       
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,7 +22,6 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager # 非同步的生命週期管理
 async def lifespan(app: FastAPI):
     # 啟動時執行（yield 之前）
-    # await init_db()
     logger.info("Service started")
     yield
     # 關閉時執行（yield 之後）
