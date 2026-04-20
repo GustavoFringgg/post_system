@@ -10,7 +10,10 @@ from app.core.config import settings
 import app.models.product
 import app.models.order
 import app.models.order_item
+import app.models.brand
 import app.models.user
+import app.models.project
+import app.models.project_inventory
 
 from alembic import context
 
